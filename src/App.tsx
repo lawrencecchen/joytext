@@ -1,27 +1,27 @@
 import { v4 as uuid } from "@lukeed/uuid";
 import clsx from "clsx";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { LayoutGroup, motion } from "framer-motion";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { I18nProvider, useDateFormatter } from "react-aria";
 import { flushSync } from "react-dom";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { yjs } from "./lib/yjs";
 
 function Texting(props: { id: string }) {
   const [messages, ymessages] = yjs.useArray<{ data: string; id: string }>(
     `messages.${props.id}`
   );
-  // const [notes, ynotes] = yjs.useArray<{
-  //   id: string;
-  //   createdAt: number;
-  //   title: string;
-  // }>("notes");
+  const [messageMeta, ymessageMeta] = yjs.useMap<{
+    id: string;
+    title?: string;
+  }>(`messageMeta.${props.id}`);
+  const [notes, ynotes] = yjs.useArray<{
+    id: string;
+    createdAt: number;
+    title: string;
+  }>("notes");
   const [message, setMessage] = useState("");
-  const reversedMessages = useMemo(
-    () => messages && [...messages].reverse(),
-    [messages]
-  );
-  const [id, setId] = useState<string | null>();
+  const [animationMessageId, setAnimationMessageId] = useState<string | null>();
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -31,18 +31,23 @@ function Texting(props: { id: string }) {
     if (!ymessages || !message) {
       return;
     }
-    const _id = uuid();
-    setId(_id);
+    const messageId = uuid();
+    setAnimationMessageId(messageId);
+
+    if (!messageMeta?.title) {
+      // ymessageMeta?.set("title", message);
+    }
+
     setTimeout(() => {
-      setId(null);
-      ymessages.push([{ data: message, id: _id }]);
+      setAnimationMessageId(null);
+      ymessages.push([{ data: message, id: messageId }]);
       flushSync(() => {
         setMessage("");
       });
-      bottomRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
+      // bottomRef.current?.scrollIntoView({
+      //   behavior: "smooth",
+      //   block: "end",
+      // });
       scrollRef.current?.scrollBy({
         behavior: "smooth",
         top: scrollRef.current.scrollHeight,
@@ -88,10 +93,10 @@ function Texting(props: { id: string }) {
               onChange={(e) => setMessage(e.target.value)}
               ref={inputRef}
             />
-            {id && (
+            {animationMessageId && (
               <motion.div
                 className="border border-transparent rounded-[20px] focus:outline-none px-3 text-base md:text-sm py-0.5 w-full font-medium text-neutral-900 min-h-[25.5px] absolute inset-0 touch-none pointer-events-none whitespace-pre z-50"
-                layoutId={id}
+                layoutId={animationMessageId}
                 initial={{ opacity: 0 }}
               >
                 {message}
@@ -100,26 +105,23 @@ function Texting(props: { id: string }) {
           </form>
         </div>
         <motion.div
-          className="grow flex flex-col-reverse items-end overflow-auto min-h-0 px-4 z-0"
+          className="grow flex flex-col justify-end items-end overflow-auto min-h-0 px-4 z-0"
           ref={scrollRef}
         >
-          <div
-            className="shrink-0 w-full"
-            ref={bottomRef}
-            style={{ minHeight: 56 }}
-          ></div>
-          {reversedMessages?.map((message, index) => (
+          {messages?.map((message, index) => (
             <motion.div
               key={message.id}
               className="rounded-[20px] bg-gradient-to-br font-medium text-base md:text-sm px-2.5 min-h-[28px] py-1 mt-0.5 shrink-0 break-words max-w-full whitespace-pre-wrap border border-transparent z-50"
               layoutId={String(message.id)}
               layout="position"
               initial={
-                id
+                animationMessageId
                   ? {
                       opacity: 0,
-                      backgroundColor: id ? "#ffffff" : "#0b93f6",
-                      color: id ? "rgb(23 23 23)" : "#ffffff",
+                      backgroundColor: animationMessageId
+                        ? "#ffffff"
+                        : "#0b93f6",
+                      color: animationMessageId ? "rgb(23 23 23)" : "#ffffff",
                     }
                   : false
               }
@@ -132,6 +134,11 @@ function Texting(props: { id: string }) {
               {message.data}
             </motion.div>
           ))}
+          <div
+            className="shrink-0 w-full"
+            ref={bottomRef}
+            style={{ minHeight: 56 }}
+          ></div>
         </motion.div>
       </LayoutGroup>
     </div>
