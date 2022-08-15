@@ -52,7 +52,7 @@ function Texting(props: { id: string }) {
   }, [props.id]);
 
   return (
-    <div className="flex flex-col-reverse h-full grow relative">
+    <div className="flex flex-col-reverse h-full grow relative min-w-screen md:min-w-0">
       {/* <button onClick={() => ymessages?.delete(0, messages?.length)}>
           💥
         </button> */}
@@ -202,7 +202,7 @@ function App() {
   const id = searchParams.get("id");
 
   return (
-    <div className="h-screen flex">
+    <div className="h-screen flex overflow-x-auto">
       <I18nProvider locale="en-US">
         <yjs.Provider
           roomName="hello"
