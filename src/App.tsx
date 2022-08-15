@@ -222,7 +222,7 @@ function App() {
           }
         }}
       >
-        <div className="h-screen flex overflow-x-auto snap-x snap-mandatory">
+        <div className="h-screen flex overflow-x-auto snap-x snap-mandatory no-scrollbar">
           {id && <Texting id={id} />}
           <SideBar selectedId={id} />
         </div>
