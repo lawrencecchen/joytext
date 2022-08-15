@@ -35,7 +35,8 @@ function Texting(props: { id: string }) {
     setAnimationMessageId(messageId);
 
     if (!messageMeta?.title) {
-      // ymessageMeta?.set("title", message);
+      // TODO: useMap types are bad :(
+      ymessageMeta?.set("title", message as any);
     }
 
     setTimeout(() => {
@@ -164,16 +165,37 @@ function SideBar(props: { selectedId: string | null }) {
       setSearchParams({ id: notes[0].id });
     }
   }
+  const persistence = yjs.usePersistence();
+  const ydoc = yjs.useYDoc();
+  const [showHiddenOptions, setShowHiddenOptions] = useState(false);
+
+  function onContextMenu(e: React.MouseEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setShowHiddenOptions(!showHiddenOptions);
+  }
 
   return (
-    <div style={{ minWidth: 300 }} className="h-full border-l p-2 snap-center">
+    <div
+      style={{ minWidth: 300 }}
+      className="h-full border-l p-2 snap-center"
+      onContextMenu={onContextMenu}
+    >
       <div className="w-full flex justify-end space-x-3">
-        {/* <button
-          onClick={() => ynotes?.delete(0, notes?.length)}
-          className="text-2xl"
-        >
-          💥
-        </button> */}
+        {showHiddenOptions && (
+          <button
+            onClick={() => {
+              if (confirm("are you sure you want to nuke everything?")) {
+                // ynotes?.delete(0, notes?.length);
+                console.log("nukin");
+                persistence?.clearData();
+                window.location = "/" as any;
+              }
+            }}
+            className="text-2xl"
+          >
+            💥
+          </button>
+        )}
         <button
           onClick={() => {
             const _id = uuid();

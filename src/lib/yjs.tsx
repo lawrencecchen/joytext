@@ -98,7 +98,7 @@ function createYjs(opts?: {
     roomName: string;
     onSync?: (ydoc: Y.Doc) => void;
   }) {
-    const [ydoc, setYdoc] = useState<Y.Doc>();
+    const [ydoc, setYDoc] = useState<Y.Doc>();
     const [persistence, setPersistence] = useState<Persistence>();
     const [synced, setSynced] = useState(false);
 
@@ -108,7 +108,7 @@ function createYjs(opts?: {
         roomName: props.roomName,
         ydoc: _doc,
       });
-      setYdoc(_doc);
+      setYDoc(_doc);
       setPersistence(_persistence);
       _persistence?.once("synced", () => {
         console.log("initial content loaded");
@@ -194,6 +194,20 @@ function createYjs(opts?: {
   function useText(path: string) {
     return useObserved<Y.Text>(path, (ydoc, path) => ydoc.getText(path));
   }
+  function useYDoc() {
+    const context = useContext(yjsContext);
+    if (!context) {
+      throw new Error("useYDoc must be used within a yjs context");
+    }
+    return context.ydoc;
+  }
+  function usePersistence() {
+    const context = useContext(yjsContext);
+    if (!context) {
+      throw new Error("usePersistence must be used within a yjs context");
+    }
+    return context.persistence;
+  }
 
   function useShared<T extends Y.Array<any> | Y.Text | Y.Map<any>>(
     props: (ydoc: Y.Doc) => T
@@ -240,6 +254,8 @@ function createYjs(opts?: {
     useArray,
     useMap,
     useText,
+    useYDoc,
+    usePersistence,
   };
 }
 
