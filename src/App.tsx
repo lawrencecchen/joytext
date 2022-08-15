@@ -97,19 +97,6 @@ function Texting(props: { id: string }) {
           className="grow flex flex-col-reverse items-end overflow-auto min-h-0 px-4 z-0"
           ref={scrollRef}
         >
-          {/* <AnimatePresence>
-            {messages && messages.length === 0 && (
-              <motion.div
-              className=
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                Start writing 👇
-              </motion.div>
-            )}
-          </AnimatePresence> */}
-          {/* <div ref={bottomRef}></div> */}
           <div
             className="shrink-0 w-full"
             ref={bottomRef}
