@@ -53,7 +53,7 @@ function Texting(props: { id: string }) {
 
   return (
     <div
-      className="flex flex-col-reverse h-full grow relative min-w-screen md:min-w-0"
+      className="flex flex-col-reverse h-full grow relative min-w-screen md:min-w-0 snap-center"
       onClick={() => inputRef.current?.focus()}
     >
       {/* <button onClick={() => ymessages?.delete(0, messages?.length)}>
@@ -149,7 +149,7 @@ function SideBar(props: { selectedId: string | null }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   return (
-    <div style={{ minWidth: 300 }} className="h-full border-l p-2">
+    <div style={{ minWidth: 300 }} className="h-full border-l p-2 snap-center">
       <div className="w-full flex justify-end space-x-3">
         {/* <button
           onClick={() => ynotes?.delete(0, notes?.length)}
