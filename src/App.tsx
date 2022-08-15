@@ -62,7 +62,7 @@ function Texting(props: { id: string }) {
       {/* <button onClick={() => ymessages?.delete(0, messages?.length)}>
           💥
         </button> */}
-      {/* {typeof messages !== "undefined" && (
+      {typeof messages !== "undefined" && (
         <div
           className={clsx(
             "inset-0 absolute grid place-content-center text-neutral-700 font-bold transition-opacity pointer-events-none touch-none -z-50",
@@ -75,7 +75,7 @@ function Texting(props: { id: string }) {
         >
           Start writing 👇
         </div>
-      )} */}
+      )}
 
       <LayoutGroup>
         <div className="px-4 pb-4 pt-2 inset-x-0 absolute bg-white/50 backdrop-blur-lg">
