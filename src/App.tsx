@@ -1,7 +1,7 @@
 import { v4 as uuid } from "@lukeed/uuid";
 import clsx from "clsx";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { I18nProvider, useDateFormatter } from "react-aria";
 import { flushSync } from "react-dom";
 import { Link, useSearchParams } from "react-router-dom";
@@ -17,7 +17,10 @@ function Texting(props: { id: string }) {
   //   title: string;
   // }>("notes");
   const [message, setMessage] = useState("");
-  const reversedMessages = messages && [...messages].reverse();
+  const reversedMessages = useMemo(
+    () => messages && [...messages].reverse(),
+    [messages]
+  );
   const [id, setId] = useState<string | null>();
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -80,14 +83,14 @@ function Texting(props: { id: string }) {
             <input
               type="text"
               name="message"
-              className="border border-neutral-300 rounded-[20px] focus:outline-none px-3 text-base py-0.5 w-full font-medium text-neutral-900"
+              className="border border-neutral-300 rounded-[20px] focus:outline-none px-3 text-base md:text-sm py-0.5 w-full font-medium text-neutral-900"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               ref={inputRef}
             />
             {id && (
               <motion.div
-                className="border border-transparent rounded-[20px] focus:outline-none px-3 text-base py-0.5 w-full font-medium text-neutral-900 min-h-[25.5px] absolute inset-0 touch-none pointer-events-none whitespace-pre z-50"
+                className="border border-transparent rounded-[20px] focus:outline-none px-3 text-base md:text-sm py-0.5 w-full font-medium text-neutral-900 min-h-[25.5px] absolute inset-0 touch-none pointer-events-none whitespace-pre z-50"
                 layoutId={id}
                 initial={{ opacity: 0 }}
               >
@@ -108,7 +111,7 @@ function Texting(props: { id: string }) {
           {reversedMessages?.map((message, index) => (
             <motion.div
               key={message.id}
-              className="rounded-[20px] bg-gradient-to-br font-medium text-base px-2.5 min-h-[28px] py-1 mt-0.5 shrink-0 break-words max-w-full whitespace-pre-wrap border border-transparent z-50"
+              className="rounded-[20px] bg-gradient-to-br font-medium text-base md:text-sm px-2.5 min-h-[28px] py-1 mt-0.5 shrink-0 break-words max-w-full whitespace-pre-wrap border border-transparent z-50"
               layoutId={String(message.id)}
               layout="position"
               initial={
@@ -146,7 +149,14 @@ function SideBar(props: { selectedId: string | null }) {
     timeStyle: "short",
     dateStyle: "short",
   });
+
   const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  if (!id) {
+    if (notes && notes?.length > 0) {
+      setSearchParams({ id: notes[0].id });
+    }
+  }
 
   return (
     <div style={{ minWidth: 300 }} className="h-full border-l p-2 snap-center">
