@@ -149,14 +149,14 @@ function SideBar(props: { selectedId: string | null }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   return (
-    <div style={{ minWidth: 300 }} className="h-full border-r p-2">
+    <div style={{ minWidth: 300 }} className="h-full border-l p-2">
       <div className="w-full flex justify-end space-x-3">
-        <button
+        {/* <button
           onClick={() => ynotes?.delete(0, notes?.length)}
           className="text-2xl"
         >
           💥
-        </button>
+        </button> */}
         <button
           onClick={() => {
             const _id = uuid();
@@ -205,29 +205,29 @@ function App() {
   const id = searchParams.get("id");
 
   return (
-    <div className="h-screen flex overflow-x-auto">
-      <I18nProvider locale="en-US">
-        <yjs.Provider
-          roomName="hello"
-          onSync={(ydoc) => {
-            const ynotes = ydoc.getArray<{
-              id: string;
-              createdAt: number;
-              title: string;
-            }>("notes");
-            if (ynotes.length === 0) {
-              const _id = uuid();
-              ynotes.push([
-                { id: _id, createdAt: Date.now(), title: "New Note" },
-              ]);
-            }
-          }}
-        >
+    <I18nProvider locale="en-US">
+      <yjs.Provider
+        roomName="hello"
+        onSync={(ydoc) => {
+          const ynotes = ydoc.getArray<{
+            id: string;
+            createdAt: number;
+            title: string;
+          }>("notes");
+          if (ynotes.length === 0) {
+            const _id = uuid();
+            ynotes.push([
+              { id: _id, createdAt: Date.now(), title: "New Note" },
+            ]);
+          }
+        }}
+      >
+        <div className="h-screen flex overflow-x-auto snap-x snap-mandatory">
           {id && <Texting id={id} />}
           <SideBar selectedId={id} />
-        </yjs.Provider>
-      </I18nProvider>
-    </div>
+        </div>
+      </yjs.Provider>
+    </I18nProvider>
   );
 }
 
