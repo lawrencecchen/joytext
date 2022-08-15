@@ -80,14 +80,14 @@ function Texting(props: { id: string }) {
             <input
               type="text"
               name="message"
-              className="border border-neutral-300 rounded-[20px] focus:outline-none px-3 text-sm py-0.5 w-full font-medium text-neutral-900"
+              className="border border-neutral-300 rounded-[20px] focus:outline-none px-3 text-base py-0.5 w-full font-medium text-neutral-900"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               ref={inputRef}
             />
             {id && (
               <motion.div
-                className="border border-transparent rounded-[20px] focus:outline-none px-3 text-sm py-0.5 w-full font-medium text-neutral-900 min-h-[25.5px] absolute inset-0 touch-none pointer-events-none whitespace-pre z-50"
+                className="border border-transparent rounded-[20px] focus:outline-none px-3 text-base py-0.5 w-full font-medium text-neutral-900 min-h-[25.5px] absolute inset-0 touch-none pointer-events-none whitespace-pre z-50"
                 layoutId={id}
                 initial={{ opacity: 0 }}
               >
@@ -108,7 +108,7 @@ function Texting(props: { id: string }) {
           {reversedMessages?.map((message, index) => (
             <motion.div
               key={message.id}
-              className="rounded-[20px] bg-gradient-to-br font-medium text-sm px-2.5 min-h-[28px] py-1 mt-0.5 shrink-0 break-words max-w-full whitespace-pre-wrap border border-transparent z-50"
+              className="rounded-[20px] bg-gradient-to-br font-medium text-base px-2.5 min-h-[28px] py-1 mt-0.5 shrink-0 break-words max-w-full whitespace-pre-wrap border border-transparent z-50"
               layoutId={String(message.id)}
               layout="position"
               initial={
