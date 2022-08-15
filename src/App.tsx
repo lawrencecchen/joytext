@@ -220,8 +220,8 @@ function App() {
             }
           }}
         >
-          <SideBar selectedId={id} />
           {id && <Texting id={id} />}
+          <SideBar selectedId={id} />
         </yjs.Provider>
       </I18nProvider>
     </div>
