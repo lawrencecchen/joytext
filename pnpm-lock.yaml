@@ -17,6 +17,7 @@ specifiers:
   unocss: ^0.45.6
   vite: ^3.0.7
   vite-plugin-pwa: ^0.12.3
+  workbox-window: ^6.5.4
   y-indexeddb: ^9.0.9
   yjs: ^13.5.41
   zod: ^3.18.0
@@ -43,6 +44,7 @@ devDependencies:
   unocss: 0.45.6_vite@3.0.7
   vite: 3.0.7
   vite-plugin-pwa: 0.12.3_vite@3.0.7
+  workbox-window: 6.5.4
 
 packages:
 
