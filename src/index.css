@@ -1,5 +1,5 @@
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, Inter, Avenir, Helvetica, Arial, sans-serif;
   /* font-size: 16px;
   line-height: 24px;
   font-weight: 400;
@@ -23,4 +23,15 @@
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+.bg-gradient {
+  background-image: linear-gradient(to bottom, rgb(86,160,245), rgb(73,146,245), rgb(54,122,246));
+  /* background-image: linear-gradient(to bottom, orange, rgb(54,122,246)); */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;  /* <- here it is */
+
+  /* width: 100vw; */
+  /* height: 900px; */
 }

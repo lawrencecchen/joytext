@@ -1,4 +1,3 @@
-import * as Y from "yjs";
 import {
   createContext,
   useCallback,
@@ -7,7 +6,8 @@ import {
   useState,
 } from "react";
 import { IndexeddbPersistence } from "y-indexeddb";
-import z, { Schema, ZodType } from "zod";
+import * as Y from "yjs";
+import z, { ZodType } from "zod";
 
 const YMap = z.object({
   _ytype: z.literal("map"),
@@ -111,7 +111,7 @@ function createYjs(opts?: {
       setYDoc(_doc);
       setPersistence(_persistence);
       _persistence?.once("synced", () => {
-        console.log("initial content loaded");
+        // console.log("initial content loaded");
         props.onSync?.(_doc);
         setSynced(true);
       });
@@ -160,7 +160,7 @@ function createYjs(opts?: {
   ) {
     const context = useContext(yjsContext);
     if (!context) {
-      throw new Error("useYDoc must be used within a yjs context");
+      throw new Error("useObserved must be used within a yjs context");
     }
     const [observedValue, setObservedValue] = useState<ObservedType<T>>();
     const [yDataType, setYDataType] = useState<T>();
@@ -200,6 +200,16 @@ function createYjs(opts?: {
       throw new Error("useYDoc must be used within a yjs context");
     }
     return context.ydoc;
+  }
+  function useTransact() {
+    const context = useContext(yjsContext);
+    if (!context) {
+      throw new Error("useTransact must be used within a yjs context");
+    }
+    if (!context.ydoc) {
+      throw new Error("useTransact(): ydoc not initialized yet");
+    }
+    return context.ydoc.transact;
   }
   function usePersistence() {
     const context = useContext(yjsContext);
@@ -256,6 +266,7 @@ function createYjs(opts?: {
     useText,
     useYDoc,
     usePersistence,
+    useTransact,
   };
 }
 

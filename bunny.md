@@ -37,3 +37,5 @@ manifest
 - https://joshtronic.com/2020/04/20/recursive-functions-in-typescript/
 - https://docs.yjs.dev/api/shared-types/y.array
 - https://liveblocks.io/docs/api-reference/liveblocks-react#useObject
+
+- https://github.com/nearform/lyra
