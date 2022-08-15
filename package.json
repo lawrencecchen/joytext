@@ -1,0 +1,33 @@
+{
+  "name": "joytext",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@lukeed/uuid": "^2.0.0",
+    "@unocss/reset": "^0.45.6",
+    "autosize": "^5.0.1",
+    "clsx": "^1.2.1",
+    "framer-motion": "^7.1.0",
+    "react": "^18.2.0",
+    "react-aria": "^3.18.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "6",
+    "y-indexeddb": "^9.0.9",
+    "yjs": "^13.5.41",
+    "zod": "^3.18.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.0.1",
+    "typescript": "^4.6.4",
+    "unocss": "^0.45.6",
+    "vite": "^3.0.7"
+  }
+}
