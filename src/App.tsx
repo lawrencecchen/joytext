@@ -52,7 +52,10 @@ function Texting(props: { id: string }) {
   }, [props.id]);
 
   return (
-    <div className="flex flex-col-reverse h-full grow relative min-w-screen md:min-w-0">
+    <div
+      className="flex flex-col-reverse h-full grow relative min-w-screen md:min-w-0"
+      onClick={() => inputRef.current?.focus()}
+    >
       {/* <button onClick={() => ymessages?.delete(0, messages?.length)}>
           💥
         </button> */}
