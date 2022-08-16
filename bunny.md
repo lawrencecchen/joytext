@@ -39,3 +39,6 @@ manifest
 - https://liveblocks.io/docs/api-reference/liveblocks-react#useObject
 
 - https://github.com/nearform/lyra
+- https://www.youtube.com/watch?v=34zcWFLCDIc
+
+- https://discuss.yjs.dev/t/moving-elements-in-lists/92/9

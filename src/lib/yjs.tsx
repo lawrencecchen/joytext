@@ -201,16 +201,6 @@ function createYjs(opts?: {
     }
     return context.ydoc;
   }
-  function useTransact() {
-    const context = useContext(yjsContext);
-    if (!context) {
-      throw new Error("useTransact must be used within a yjs context");
-    }
-    if (!context.ydoc) {
-      throw new Error("useTransact(): ydoc not initialized yet");
-    }
-    return context.ydoc.transact;
-  }
   function usePersistence() {
     const context = useContext(yjsContext);
     if (!context) {
@@ -266,7 +256,6 @@ function createYjs(opts?: {
     useText,
     useYDoc,
     usePersistence,
-    useTransact,
   };
 }
 
