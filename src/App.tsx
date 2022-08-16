@@ -2,7 +2,7 @@ import { v4 as uuid } from "@lukeed/uuid";
 import clsx from "clsx";
 import { isToday } from "date-fns";
 import { LayoutGroup, motion, useScroll } from "framer-motion";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { I18nProvider, useDateFormatter } from "react-aria";
 import { flushSync } from "react-dom";
 import { useSearchParams } from "react-router-dom";
@@ -235,8 +235,28 @@ function Texting(props: { id: string }) {
   );
 }
 
+function NukeEverything() {
+  const persistence = yjs.usePersistence();
+
+  return (
+    <button
+      onClick={async () => {
+        const confirmed = confirm("are you sure you want to nuke everything?");
+        if (confirmed) {
+          await persistence?.clearData();
+          window.location.search = "";
+          window.location.href = "/";
+        }
+      }}
+      className="text-3xl"
+      aria-label="Delete all data"
+    >
+      💥
+    </button>
+  );
+}
+
 function SideBar() {
-  // const [mounted, setMounted] = useState(false);
   const mounted = useRef(false);
   const [notes, ynotes] = yjs.useArray<{
     id: string;
@@ -267,15 +287,13 @@ function SideBar() {
           setSearchParams({ id: firstNote.id });
         }
       } else {
-        throw new Error(
-          "no notes, this should never happen unless the persistence sync failed"
-        );
+        const noteId = createNewNote(ynotes);
+        setSearchParams({ id: noteId });
       }
       mounted.current = true;
     }
   }, [selectedId, ynotes]);
 
-  const persistence = yjs.usePersistence();
   const [showHiddenOptions, setShowHiddenOptions] = useState(false);
   const theme = useTheme();
 
@@ -284,19 +302,41 @@ function SideBar() {
     setShowHiddenOptions(!showHiddenOptions);
   }
 
+  function handleDeleteNote() {
+    if (!confirm("Are you sure you want to delete this note?")) return;
+    const noteIndex = notes?.findIndex((note) => note.id === selectedId);
+    if (noteIndex !== undefined && ynotes) {
+      ynotes.delete(noteIndex);
+      const nextSelectedNote = notes?.[noteIndex + 1];
+      if (nextSelectedNote) {
+        setSearchParams({ id: nextSelectedNote.id });
+      } else if (notes?.[noteIndex - 1]) {
+        setSearchParams({ id: notes[noteIndex - 1].id });
+      } else {
+        setSearchParams({});
+      }
+    }
+  }
+
+  function handleCreateNote() {
+    if (!ynotes) return;
+    const noteId = createNewNote(ynotes);
+    setSearchParams({ id: noteId });
+  }
+
   return (
     <div
-      style={{ minWidth: 300 }}
-      className="h-full border-l dark:border-neutral-800 p-2 snap-center flex flex-col"
+      style={{ minWidth: 300, maxWidth: 300 }}
+      className="h-full border-l dark:border-neutral-800 snap-center flex flex-col w-full"
       onContextMenu={onContextMenu}
     >
-      <ul className="overflow-y-auto grow">
+      <ul className="overflow-y-auto overflow-x-hidden grow p-2">
         {notes?.map((note, i) => (
           <li key={note.id}>
             <button
               onClick={() => setSearchParams({ id: note.id })}
               className={clsx(
-                "rounded-md cursor-default select-none px-5 py-2 w-full flex flex-col",
+                "rounded-md cursor-default select-none px-5 py-2 w-full flex flex-col truncate",
                 {
                   "bg-neutral-200 dark:bg-neutral-700": note.id === selectedId,
                 }
@@ -321,13 +361,9 @@ function SideBar() {
           </li>
         ))}
       </ul>
-      <div className="w-full flex justify-center space-x-3">
+      <div className="w-full flex justify-center space-x-3 p-2">
         <button
-          onClick={() => {
-            if (!ynotes) return;
-            const noteId = createNewNote(ynotes);
-            setSearchParams({ id: noteId });
-          }}
+          onClick={handleCreateNote}
           className="text-3xl"
           aria-label={NEW_NOTE_TITLE}
         >
@@ -340,24 +376,51 @@ function SideBar() {
         >
           {theme.isDarkMode ? "🌞" : "🌙"}
         </button>
-        {showHiddenOptions && (
+        {showHiddenOptions && <NukeEverything />}
+        <div className="mr-0 ml-auto">
           <button
-            onClick={async () => {
-              if (confirm("are you sure you want to nuke everything?")) {
-                await persistence?.clearData();
-                window.location.search = "";
-                window.location.href = "/";
-              }
-            }}
+            onClick={handleDeleteNote}
+            aria-label="Delete note"
             className="text-3xl"
-            aria-label="Delete all data"
           >
-            💥
+            🗑️
           </button>
-        )}
+        </div>
       </div>
     </div>
   );
+}
+
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }> {
+  state: { error: Error | null; errorInfo: any };
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { error: null, errorInfo: null };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    this.setState({
+      error: error,
+      errorInfo: errorInfo,
+    });
+  }
+
+  render() {
+    if (this.state.errorInfo) {
+      return (
+        <div>
+          <h2>Something went wrong.</h2>
+          <NukeEverything />
+          <details style={{ whiteSpace: "pre-wrap" }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.errorInfo.componentStack}
+          </details>
+        </div>
+      );
+    }
+    return <>{this.props.children}</>;
+  }
 }
 
 function App() {
@@ -365,27 +428,29 @@ function App() {
   const id = searchParams.get("id");
 
   return (
-    <I18nProvider locale="en-US">
-      <yjs.Provider
-        roomName="hello"
-        onSync={(ydoc) => {
-          const ynotes = ydoc.getArray<{
-            id: string;
-            createdAt: number;
-            updatedAt: number;
-            title: string;
-          }>("notes");
-          if (ynotes.length === 0) {
-            createNewNote(ynotes);
-          }
-        }}
-      >
-        <div className="h-screen flex overflow-x-auto snap-x snap-mandatory no-scrollbar dark:bg-neutral-900">
-          {id && <Texting id={id} />}
-          <SideBar />
-        </div>
-      </yjs.Provider>
-    </I18nProvider>
+    <ErrorBoundary>
+      <I18nProvider locale="en-US">
+        <yjs.Provider
+          roomName="hello"
+          onSync={(ydoc) => {
+            const ynotes = ydoc.getArray<{
+              id: string;
+              createdAt: number;
+              updatedAt: number;
+              title: string;
+            }>("notes");
+            if (ynotes.length === 0) {
+              createNewNote(ynotes);
+            }
+          }}
+        >
+          <div className="h-screen flex overflow-x-auto snap-x snap-mandatory no-scrollbar dark:bg-neutral-900">
+            {id ? <Texting id={id} /> : <div className="grow" />}
+            <SideBar />
+          </div>
+        </yjs.Provider>
+      </I18nProvider>
+    </ErrorBoundary>
   );
 }
 

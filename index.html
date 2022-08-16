@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-transparent">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -14,13 +14,13 @@
     <meta name="msapplication-TileColor" content="#2d9cdb" />
     <title>joytext</title>
   </head>
-  <body class="overflow-hidden overscroll-y-contain">
+  <body class="overflow-hidden overscroll-y-contain bg-transparent">
     <script>
       if (window.localStorage.getItem("usehooks-ts-dark-mode") === "true") {
         document.body.classList.add("dark");
       }
     </script>
-    <div id="root" class="dark:bg-neutral-900"></div>
+    <div id="root" class="dark:bg-neutral-900 rounded-2xl"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
