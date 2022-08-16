@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { isToday } from "date-fns";
 import { LayoutGroup, motion, useScroll } from "framer-motion";
 import React, { FormEvent, useEffect, useRef, useState } from "react";
-import { I18nProvider, useDateFormatter } from "react-aria";
+import { I18nProvider } from "react-aria";
 import { flushSync } from "react-dom";
 import { useSearchParams } from "react-router-dom";
 import { useElementSize, useMediaQuery } from "usehooks-ts";
@@ -12,6 +12,45 @@ import AutosizeTextarea from "./components/AutosizeTextarea";
 import DateFormatter from "./lib/DateFormatter";
 import { useTheme } from "./lib/useTheme";
 import { yjs } from "./lib/yjs";
+import { Command } from "cmdk";
+
+const CommandMenu = () => {
+  const [open, setOpen] = React.useState(false);
+
+  // Toggle the menu when ⌘K is pressed
+  React.useEffect(() => {
+    const down = (e) => {
+      if (e.key === "k" && e.metaKey) {
+        setOpen((open) => !open);
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
+  return (
+    <Command.Dialog
+      open={open}
+      onOpenChange={setOpen}
+      label="Global Command Menu"
+    >
+      <Command.Input />
+      <Command.List>
+        <Command.Empty>No results found.</Command.Empty>
+
+        <Command.Group heading="Letters">
+          <Command.Item>a</Command.Item>
+          <Command.Item>b</Command.Item>
+          <Command.Separator />
+          <Command.Item>c</Command.Item>
+        </Command.Group>
+
+        <Command.Item>Apple</Command.Item>
+      </Command.List>
+    </Command.Dialog>
+  );
+};
 
 const NEW_NOTE_TITLE = "New Note";
 function createNewNote(
@@ -100,13 +139,23 @@ function Texting(props: { id: string }) {
       });
     });
   }
+  const [_, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    textareaRef.current?.focus();
-  }, [props.id, textareaKey]);
+    if (!isMobile) {
+      textareaRef.current?.focus();
+    }
+  }, [props.id, textareaKey, isMobile]);
 
   return (
-    <div className="flex flex-col-reverse h-full grow relative min-w-screen md:min-w-0 snap-center">
+    <div
+      className="flex flex-col-reverse h-full grow relative min-w-screen md:min-w-0 snap-center"
+      onDoubleClick={() => {
+        if (!ynotes) return;
+        const noteId = createNewNote(ynotes);
+        setSearchParams({ id: noteId });
+      }}
+    >
       {/* <button onClick={() => ymessages?.delete(0, messages?.length)}>
           💥
         </button> */}
@@ -361,7 +410,7 @@ function SideBar() {
           </li>
         ))}
       </ul>
-      <div className="w-full flex justify-center space-x-3 p-2">
+      <div className="w-full flex justify-center space-x-3 p-2 select-none">
         <button
           onClick={handleCreateNote}
           className="text-3xl"
