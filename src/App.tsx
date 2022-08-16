@@ -178,7 +178,11 @@ function Texting(props: { id: string }) {
     if (!isMobile) {
       textareaRef.current?.focus();
     }
-  }, [props.id, textareaKey, isMobile]);
+  }, [props.id, isMobile]);
+
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, [textareaKey]);
 
   return (
     <div
