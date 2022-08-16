@@ -1,18 +1,15 @@
 import { v4 as uuid } from "@lukeed/uuid";
-import clsx, { ClassValue } from "clsx";
+import clsx from "clsx";
 import { isToday } from "date-fns";
 import { LayoutGroup, motion, useScroll } from "framer-motion";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import {
-  DateFormatterOptions,
-  I18nProvider,
-  useDateFormatter,
-} from "react-aria";
+import { I18nProvider, useDateFormatter } from "react-aria";
 import { flushSync } from "react-dom";
 import { useSearchParams } from "react-router-dom";
 import { useElementSize } from "usehooks-ts";
 import * as Y from "yjs";
 import AutosizeTextarea from "./components/AutosizeTextarea";
+import DateFormatter from "./lib/DateFormatter";
 import { useTheme } from "./lib/useTheme";
 import { yjs } from "./lib/yjs";
 
@@ -37,22 +34,6 @@ function createNewNote(
   return _id;
 }
 
-function DateFormatter(props: {
-  value?: Date | null;
-  options?: DateFormatterOptions;
-  className?: ClassValue;
-}) {
-  const formatter = useDateFormatter(props.options);
-  if (!props.value) {
-    return <>-</>;
-  }
-  return (
-    <time className={clsx("whitespace-nowrap", props.className)}>
-      {formatter.format(props.value)}
-    </time>
-  );
-}
-
 type Message = { data: string; id: string };
 
 function Texting(props: { id: string }) {
@@ -72,7 +53,6 @@ function Texting(props: { id: string }) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const textareaWrapper = useRef<HTMLDivElement | null>(null);
   const { scrollY } = useScroll({
     container: scrollRef,
   });
@@ -165,11 +145,6 @@ function Texting(props: { id: string }) {
                     onSubmit(e);
                   }
                 }}
-                // onResize={(el) => {
-                //   if (textareaWrapper.current) {
-                //     setTextareaWrapperHeight(el.offsetHeight);
-                //   }
-                // }}
                 ref={textareaRef}
               />
             </div>
@@ -239,18 +214,14 @@ function Texting(props: { id: string }) {
 }
 
 function SideBar() {
-  const [mounted, setMounted] = useState(false);
+  // const [mounted, setMounted] = useState(false);
+  const mounted = useRef(false);
   const [notes, ynotes] = yjs.useArray<{
     id: string;
     createdAt: number;
     updatedAt: number;
     title: string;
   }>("notes");
-
-  const formatter = useDateFormatter({
-    timeStyle: "short",
-    dateStyle: "short",
-  });
 
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedId = searchParams.get("id");
@@ -263,7 +234,7 @@ function SideBar() {
     ) {
       const firstNote = notes?.[0];
       if (firstNote) {
-        if (!mounted) {
+        if (!mounted.current) {
           if (firstNote && firstNote.title === NEW_NOTE_TITLE) {
             setSearchParams({ id: firstNote.id });
           } else {
@@ -278,8 +249,9 @@ function SideBar() {
           "no notes, this should never happen unless the persistence sync failed"
         );
       }
+      mounted.current = true;
     }
-  }, [selectedId, ynotes, mounted]);
+  }, [selectedId, ynotes]);
 
   const persistence = yjs.usePersistence();
   const [showHiddenOptions, setShowHiddenOptions] = useState(false);
@@ -319,25 +291,6 @@ function SideBar() {
                     dateStyle: isToday(note.updatedAt) ? undefined : "short",
                   }}
                 />
-                {/* {isToday(note.updatedAt) ? (
-                  <DateFormatter
-                    value={new Date(note.updatedAt)}
-                    options={{
-                      timeStyle: "short",
-                      dateStyle: "short",
-                    }}
-                  />
-                ) : (
-                  <DateFormatter
-                    value={new Date(note.updatedAt)}
-                    options={{
-                      timeStyle: "short",
-                      dateStyle: "short",
-                    }}
-                  />
-                )} */}
-                {/* {isToday(note.createdAt) ? formatter.format(new Date(note.updatedAt)) : formatter.format(new Date(note.updatedAt))} */}
-                {/* {formatter.format(new Date(note.updatedAt))} */}
               </span>
             </button>
             {i < notes.length - 1 && (
@@ -386,8 +339,7 @@ function SideBar() {
 }
 
 function App() {
-  // const [id, setId] = useState("123");
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
 
   return (
