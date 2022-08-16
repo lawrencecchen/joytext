@@ -62,6 +62,7 @@ function Texting(props: { id: string }) {
     useElementSize<HTMLDivElement>();
   const matches = useMediaQuery("(min-width: 768px)");
   const isMobile = !matches;
+  const theme = useTheme();
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -143,8 +144,10 @@ function Texting(props: { id: string }) {
                 rows={1}
                 key={textareaKey}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey && !isMobile) {
-                    onSubmit(e);
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    if (!isMobile || e.metaKey) {
+                      onSubmit(e);
+                    }
                   }
                 }}
                 ref={textareaRef}
@@ -160,9 +163,19 @@ function Texting(props: { id: string }) {
             </div>
             {animationMessageId && (
               <motion.div
-                className="border border-transparent rounded-[16px] transform translate-x-[16px] translate-y-[8px] focus:outline-none px-3 pt-0.5 text-base md:text-sm w-full text-neutral-900 min-h-[24px] absolute inset-0 touch-none pointer-events-none whitespace-pre"
+                className="border border-transparent rounded-[16px] focus:outline-none px-3 pt-0.5 text-base md:text-sm w-full text-neutral-900 absolute inset-0 touch-none pointer-events-none whitespace-pre"
                 layoutId={animationMessageId}
-                initial={{ opacity: 0.1 }}
+                style={{
+                  height: textareaHeight,
+                }}
+                initial={{
+                  // TODO: For some reason, opacity animations don't work when there are multiple rows.
+                  opacity: textareaHeight === 52 ? 0 : 1,
+                  x: 16,
+                  y: 8,
+                  backgroundColor: theme.isDarkMode ? "#171717" : "#fff",
+                  color: theme.isDarkMode ? "#fff" : "#171717",
+                }}
               >
                 {message}
               </motion.div>
@@ -178,7 +191,7 @@ function Texting(props: { id: string }) {
             className="shrink-0 w-full cursor-text"
             ref={bottomRef ?? 52}
             style={{
-              minHeight: textareaHeight + 16,
+              minHeight: textareaHeight + (isMobile ? 12 : 8),
             }}
             transition={{ duration: 0.075 }}
           ></motion.div>
@@ -187,9 +200,9 @@ function Texting(props: { id: string }) {
               <motion.div
                 key={message.id}
                 className={clsx(
-                  "rounded-[16px] text-base md:text-sm px-2.5 min-h-[28px] min-w-[40px] flex justify-center py-1 mt-0.5 shrink-0 break-all max-w-lg whitespace-pre-wrap border border-transparent",
+                  "rounded-[16px] text-base md:text-sm px-2.5 min-w-[40px] flex justify-center py-1 mt-0.5 shrink-0 break-all max-w-lg whitespace-pre-wrap border border-transparent",
                   {
-                    // todo: make bg-gradient work with
+                    // TODO: make bg-gradient work with
                     // "bg-gradient": message.id !== animationMessageId,
                   }
                 )}
@@ -200,15 +213,14 @@ function Texting(props: { id: string }) {
                   animationMessageId
                     ? {
                         opacity: 0,
-                        backgroundColor: animationMessageId
-                          ? "#ffffff"
-                          : "#0b93f6",
-                        color: animationMessageId ? "rgb(23 23 23)" : "#ffffff",
+                        backgroundColor: theme.isDarkMode ? "#171717" : "#fff",
+                        color: theme.isDarkMode ? "#fff" : "#171717",
                       }
                     : false
                 }
                 animate={{
                   opacity: 1,
+                  minHeight: 28,
                   backgroundColor: "#0b93f6",
                   color: "#ffffff",
                 }}
