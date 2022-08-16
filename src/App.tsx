@@ -6,7 +6,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { I18nProvider, useDateFormatter } from "react-aria";
 import { flushSync } from "react-dom";
 import { useSearchParams } from "react-router-dom";
-import { useElementSize } from "usehooks-ts";
+import { useElementSize, useMediaQuery } from "usehooks-ts";
 import * as Y from "yjs";
 import AutosizeTextarea from "./components/AutosizeTextarea";
 import DateFormatter from "./lib/DateFormatter";
@@ -60,6 +60,8 @@ function Texting(props: { id: string }) {
   const [textareaKey, setTextareaKey] = useState(0);
   const [textareaWrapperMeasurerRef, { height: textareaHeight }] =
     useElementSize<HTMLDivElement>();
+  const matches = useMediaQuery("(min-width: 768px)");
+  const isMobile = !matches;
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -133,24 +135,32 @@ function Texting(props: { id: string }) {
             className="flex"
             onClick={() => textareaRef.current?.focus()}
           >
-            <div className="border border-neutral-300 dark:border-neutral-700 rounded-[16px] px-3 pt-0.5 pb-1 w-full flex backdrop-blur-3xl">
+            <div className="border border-neutral-300 dark:border-neutral-700 rounded-[16px] pl-3 pr-1 py-0.5 w-full flex items-center backdrop-blur-3xl">
               <AutosizeTextarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="focus:outline-none text-base md:text-sm grow w-full dark:text-white text-neutral-900 bg-transparent"
+                className="focus:outline-none text-base md:text-sm grow dark:text-white text-neutral-900 bg-transparent mb-0.5"
                 rows={1}
                 key={textareaKey}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
+                  if (e.key === "Enter" && !e.shiftKey && !isMobile) {
                     onSubmit(e);
                   }
                 }}
                 ref={textareaRef}
               />
+              {isMobile && (
+                <button
+                  className="rounded-full h-[22px] ml-2 w-auto bg-[#0b93f6] aspect-square focus:outline-none grid place-content-center"
+                  aria-label="Send"
+                >
+                  <span className="i-material-symbols-arrow-upward-rounded text-white" />
+                </button>
+              )}
             </div>
             {animationMessageId && (
               <motion.div
-                className="border border-transparent rounded-[16px] transform translate-x-[16px] translate-y-[8px] focus:outline-none px-3 pt-0.5 pb-1 text-base md:text-sm w-full text-neutral-900 min-h-[24px] absolute inset-0 touch-none pointer-events-none whitespace-pre"
+                className="border border-transparent rounded-[16px] transform translate-x-[16px] translate-y-[8px] focus:outline-none px-3 pt-0.5 text-base md:text-sm w-full text-neutral-900 min-h-[24px] absolute inset-0 touch-none pointer-events-none whitespace-pre"
                 layoutId={animationMessageId}
                 initial={{ opacity: 0.1 }}
               >

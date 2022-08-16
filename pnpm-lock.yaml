@@ -1,10 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@iconify/json': ^2.1.93
   '@lukeed/uuid': ^2.0.0
+  '@nearform/lyra': ^0.0.4
   '@types/autosize': ^4.0.1
   '@types/react': ^18.0.17
   '@types/react-dom': ^18.0.6
+  '@unocss/preset-icons': ^0.45.6
   '@unocss/preset-wind': ^0.45.6
   '@unocss/reset': ^0.45.6
   '@vitejs/plugin-react': ^2.0.1
@@ -28,7 +31,7 @@ specifiers:
 
 dependencies:
   '@lukeed/uuid': 2.0.0
-  '@unocss/reset': 0.45.6
+  '@nearform/lyra': 0.0.4
   autosize: 5.0.1
   clsx: 1.2.1
   date-fns: 2.29.1
@@ -43,10 +46,13 @@ dependencies:
   zod: 3.18.0
 
 devDependencies:
+  '@iconify/json': 2.1.93
   '@types/autosize': 4.0.1
   '@types/react': 18.0.17
   '@types/react-dom': 18.0.6
+  '@unocss/preset-icons': 0.45.6
   '@unocss/preset-wind': 0.45.6
+  '@unocss/reset': 0.45.6
   '@vitejs/plugin-react': 2.0.1_vite@3.0.7
   typescript: 4.7.4
   unocss: 0.45.6_vite@3.0.7
@@ -1335,6 +1341,13 @@ packages:
       tslib: 2.4.0
     dev: false
 
+  /@iconify/json/2.1.93:
+    resolution: {integrity: sha512-gFmjXeSKI7NXHU8i1mwPJCjpUwignMh2ZIoarC87cp3nHyAyT5R/v2cH/VhAaJGPU3hM+Sl9r/yFYxhwwsU2qA==}
+    dependencies:
+      '@iconify/types': 1.1.0
+      pathe: 0.3.4
+    dev: true
+
   /@iconify/types/1.1.0:
     resolution: {integrity: sha512-Jh0llaK2LRXQoYsorIH8maClebsnzTcve+7U3rQUSnC11X4jtPnFuyatqFLvMxZ8MLG8dB4zfHsbPfuvxluONw==}
     dev: true
@@ -1479,6 +1492,10 @@ packages:
       '@motionone/types': 10.13.2
       hey-listen: 1.0.8
       tslib: 2.4.0
+    dev: false
+
+  /@nearform/lyra/0.0.4:
+    resolution: {integrity: sha512-X1Z553Ku+6nBkwW3zZ6aPAFLu6MmOkysUE7WpPAJYuEE5zgDLh2pGLy4NVPeTaIg3iBJvhLX4atz/lrJwEj4rQ==}
     dev: false
 
   /@nodelib/fs.scandir/2.1.5:
@@ -2838,6 +2855,7 @@ packages:
 
   /@unocss/reset/0.45.6:
     resolution: {integrity: sha512-L02ur7LFzeIzOgQ419vA14498F76jbvKMeTdiVyR3Ym2C7BkxUGg6CgqY7Exm6e2qOjgcFkYU93aWaOyKi9hzw==}
+    dev: true
 
   /@unocss/scope/0.45.6:
     resolution: {integrity: sha512-1x2ikRsHfDXHMRr68fU+cF55v0TILaGH+s5Us7swA1un1D70EdE8z1cU+RvY6WxWL8cQNb/aCvPf8daduKVCxg==}
