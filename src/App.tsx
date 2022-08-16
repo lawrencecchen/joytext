@@ -19,7 +19,7 @@ const CommandMenu = () => {
 
   // Toggle the menu when ⌘K is pressed
   React.useEffect(() => {
-    const down = (e) => {
+    const down = (e: KeyboardEvent) => {
       if (e.key === "k" && e.metaKey) {
         setOpen((open) => !open);
       }
@@ -28,26 +28,59 @@ const CommandMenu = () => {
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, []);
+  const darkMode = useTheme();
 
   return (
     <Command.Dialog
       open={open}
       onOpenChange={setOpen}
       label="Global Command Menu"
+      className="absolute inset-0 flex justify-center pt-20"
     >
-      <Command.Input />
-      <Command.List>
-        <Command.Empty>No results found.</Command.Empty>
+      <div className="backdrop-blur-lg bg-white/90 dark:bg-neutral-900/90 max-w-xl w-full max-h-96 rounded-2xl shadow-2xl border dark:border-neutral-700">
+        <Command.Input
+          placeholder="Search for notes and commands..."
+          className="w-full px-4 py-3 focus:outline-none rounded-t-2xl bg-transparent dark:text-white"
+        />
+        <hr className="dark:border-neutral-700" />
+        <Command.List className="p-4">
+          <Command.Empty className="dark:text-white">
+            No results found.
+          </Command.Empty>
 
-        <Command.Group heading="Letters">
-          <Command.Item>a</Command.Item>
-          <Command.Item>b</Command.Item>
-          <Command.Separator />
-          <Command.Item>c</Command.Item>
-        </Command.Group>
+          <Command.Group
+            heading="General"
+            className="text-xs text-neutral-600 dark:text-neutral-400"
+          >
+            <div className="mt-3" />
+            {darkMode.isDarkMode ? (
+              <Command.Item
+                className="text-base px-4 py-3 rounded-lg dark:text-neutral-200 aria-selected:bg-neutral-200 dark:aria-selected:bg-neutral-800"
+                onSelect={() => {
+                  darkMode.disable();
+                  setOpen(false);
+                }}
+              >
+                🌞 Change Theme to Light
+              </Command.Item>
+            ) : (
+              <Command.Item
+                className="text-base px-3 py-2 rounded-lg dark:text-neutral-200 aria-selected:bg-neutral-200 dark:aria-selected:bg-neutral-800"
+                onSelect={() => {
+                  darkMode.enable();
+                  setOpen(false);
+                }}
+              >
+                🌙 Change Theme to Dark
+              </Command.Item>
+            )}
+            {/* <Command.Separator />
+            <Command.Item>c</Command.Item> */}
+          </Command.Group>
 
-        <Command.Item>Apple</Command.Item>
-      </Command.List>
+          {/* <Command.Item>Apple</Command.Item> */}
+        </Command.List>
+      </div>
     </Command.Dialog>
   );
 };
@@ -242,7 +275,6 @@ function Texting(props: { id: string }) {
             style={{
               minHeight: textareaHeight + (isMobile ? 12 : 8),
             }}
-            transition={{ duration: 0.075 }}
           ></motion.div>
           <div className={clsx("flex flex-col items-end justify-end grow")}>
             {messages?.map((message) => (
@@ -497,6 +529,7 @@ function App() {
             {id ? <Texting id={id} /> : <div className="grow" />}
             <SideBar />
           </div>
+          <CommandMenu />
         </yjs.Provider>
       </I18nProvider>
     </ErrorBoundary>

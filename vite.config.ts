@@ -10,6 +10,17 @@ export default defineConfig({
   plugins: [
     react(),
     Unocss({
+      variants: [
+        (matcher) => {
+          if (!matcher.startsWith("aria-selected:")) {
+            return matcher;
+          }
+          return {
+            matcher: matcher.slice(14),
+            selector: (s) => `${s}[aria-selected]`,
+          };
+        },
+      ],
       presets: [
         presetIcons({
           extraProperties: {
